@@ -1,0 +1,15 @@
+# Planworld Client .htaccess file.
+# Change name to .htaccess (with leading period) and place in "client" folder.
+# This allows Javascript clients to access the page.
+Header set Access-Control-Allow-Origin *
+# Rewrite any request to this directory so that it goes to index.php
+# and sends the full requested URL as an argument called "apiurl"
+RewriteEngine On
+# Replace the path in the next line with the path to the client directory
+# as a web client or browser would access it relative to the server name.
+# i.e. "http://www.myserver.com/~/myuser/planworldv3/client" would become
+# "/~/myuser/planworldv3/client" (without quotes)
+RewriteBase /~jlodom/code01/planworld_live/client
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php?apiurl=$1 [QSA,L]

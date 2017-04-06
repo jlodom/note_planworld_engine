@@ -1,0 +1,37 @@
+h3 {
+	color: #ede9af;
+	font-weight: bold;
+	font-size: 18px;
+}
+
+
+body {
+	font-size: 14px;
+	font-family: Georgia, Garamond, "Times New Roman", sans-serif;
+	background-color: #50529f;
+	color: #9fcfe9;
+}
+
+*:link {
+	text-decoration: none;
+	color:inherit;
+}
+
+div#sendRequestButton {
+	text-shadow: 2px 2px 24px #892431;
+	border-width: 1px;
+	font-size: 18px;
+	color: #ff4f74;
+}
+
+div#planworldResult {
+	border-color: #9fcfe9;
+	border-style: ridge;
+	border-width: 3px;
+	font-size: 12px;
+	background-color: #aadfff;
+	color: #323366;
+	width: 60%;
+}
+
+

@@ -1,0 +1,136 @@
+body {
+	font-size: 14px;
+	font-family: Verdana, "Bitstream Vera Sans", sans-serif;
+  background-color: #acb0e6;
+	color: #000000;
+}
+
+#work {
+	background-color: #7d86a2;
+	margin: 20px;
+	padding:10px;
+	word-wrap: break-word;
+}
+
+h3 {
+	font-size: 24px;
+	text-align: center;
+	color: #404659;
+}
+
+form
+{
+	font-size: 14px;
+	background-color: #7d86a2;
+	width: 280px;
+	border-radius: 5px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+fieldset
+{
+	width: 100px;
+	border: none;
+	margin: -10px -5px -10px -5px ;
+}
+
+button
+{
+	background-color: #d8daf3;
+	color: black;
+	text-align:center;
+	border-radius: 4px;
+}
+
+input {
+	border-radius: 0px;
+}
+
+legend {
+	background: #54ac96;
+	color: #ffffff;
+}
+
+fieldset {
+	text-align: left;
+}
+
+
+.smallform
+{
+	width: 60px;
+}
+
+.smallform button{
+	margin: 0 auto;
+	width: 60px;
+}
+
+.notice
+{
+	color: #f9e936;
+	text-align: center;
+}
+
+.fatal
+{
+	color: #ce2c2c
+}
+
+label {
+}
+
+a:link{
+	color: #54ac96;
+}
+
+a:visited{
+	color: #98a0a0;
+}
+
+a:active{
+	color: #98a0a0;
+}
+
+a:hover{
+	color: #98a0a0;
+}
+
+pre {
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+table {
+	table-layout: auto;
+	width:1200px;
+	border-collapse:collapse;
+	font-size: 11px;
+	border: 1px solid rgba(84,172,150,0.76);
+}
+
+td {
+	vertical-align:top;
+	word-wrap: break-word;
+	border: 1px solid rgba(84,172,150,0.76);
+	max-width: 420px;
+}
+
+th {
+	vertical-align:middle;
+	word-wrap: break-word;
+	border: 2px solid rgba(84,172,150,0.76);
+	background: rgba(84,172,150,0.47);
+}
+
+tr:nth-child(even) {
+	background: rgba(84,172,150,0.31);
+}
+
+tr:nth-child(odd) {
+background: rgba(84,172,150,0.2);
+}

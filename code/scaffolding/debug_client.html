@@ -1,0 +1,227 @@
+<!DOCTYPE "HTML">
+<html>
+	<head>
+		<LINK REL=StyleSheet HREF="alpha.css" TYPE="text/css" MEDIA=screen />
+		<title>Planworld API Debug Client</title>
+	</head>
+	<body>
+		<!-- Version 1.2 20170405 -->
+		<script src="./ajaxFunctions.js"></script>
+
+		<script>
+
+			/* Decoding function still needs work. For example, the result of the version call. */
+			function formatDecode(outputData, formatType){
+
+				/* Sanitize format type extension and remove period. */
+				formatType = formatType.replace(/[^a-zA-Z]+/g,'');
+				formatType = formatType.toLowerCase();
+
+
+				if(formatType == 'xml'){
+					/* Load the output into a DOM XML object. XML-RPC formats aren't easy in Javascript. */
+					if (window.DOMParser){
+						parser=new DOMParser();
+						xmlDoc=parser.parseFromString(outputData,"text/xml");
+					}
+					/* Internet Explorer */
+					else {
+  					xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+						xmlDoc.async="false";
+						xmlDoc.loadXML(outputData);
+ 					}
+ 					var xml_serializer = new XMLSerializer();
+          outputData = xml_serializer.serializeToString(xmlDoc);
+
+				}
+				else if(formatType == 'json'){
+					outputData = eval(outputData);
+				}
+				else if(formatType == 'txt'){
+					outputData = outputData;
+				}
+				else{
+					outputData = outputData;
+				}
+				return outputData;
+
+			}
+
+			function jsclient (){
+
+				/* Set some defaults and initialize some variables. */
+				var planworldbasedefault = "http://servername.com/client/"; /*Change when setting on new platform. */
+				var PLANWORLDBASE = '';
+				var httpcomm = 'GET'; /* Safe Default. */
+				var formatOutput = '';
+				var argument1 = '';
+				var argument2 = '';
+				var argument3 = '';
+				var argument4 = '';
+
+				/* Assign values to variables from the form. */
+
+				if((document.planrequest.nodeURL.value==null) || document.planrequest.nodeURL.value==''){
+					PLANWORLDBASE = planworldbasedefault;
+				}
+				else{
+					PLANWORLDBASE = document.planrequest.nodeURL.value;
+				}
+
+				var version = document.planrequest.apiVersion.value;
+				var category = document.planrequest.category.value;
+
+				var nounName = document.planrequest.planNoun.value;
+
+
+				for (var i=0; i < document.planrequest.httpMethod.length; i++){
+   				if (document.planrequest.httpMethod[i].checked){
+			      httpcomm = document.planrequest.httpMethod[i].value;
+      		}
+				}
+
+				if((document.planrequest.arg1.value==null) || document.planrequest.arg1.value==''){
+					argument1 = '';
+				}
+				else{
+					argument1 = '/' + document.planrequest.arg1.value;
+				}
+				if((document.planrequest.arg2.value==null) || document.planrequest.arg2.value==''){
+					argument2 = '';
+				}
+				else{
+					argument2 = '/' + document.planrequest.arg2.value;
+				}
+				if((document.planrequest.arg3.value==null) || document.planrequest.arg3.value==''){
+					argument3 = '';
+				}
+				else{
+					argument3 = '/' + document.planrequest.arg3.value;
+				}
+
+				if((document.planrequest.arg4.value==null) || document.planrequest.arg4.value==''){
+					argument4 = '';
+				}
+				else{
+					argument4 = '/' + document.planrequest.arg4.value;
+				}
+
+				for (var i=0; i < document.planrequest.outputFormat.length; i++){
+   				if (document.planrequest.outputFormat[i].checked){
+			      formatOutput = '.' + document.planrequest.outputFormat[i].value;
+      		}
+				}
+
+				var auth = '';
+				for (var i=0; i < document.planrequest.useToken.length; i++){
+   				if ((document.planrequest.useToken[i].checked) && (document.planrequest.useToken[i].value == 'Yes')){
+						auth = '?token=' + document.planrequest.token.value;
+      		}
+				}
+
+				var requestURL = PLANWORLDBASE + version + '/' + category + '/' + nounName + argument1 + argument2 + argument3 + argument4 + formatOutput + auth;
+				document.getElementById('rawURL').innerHTML = requestURL; /* Set here to make debugging easier. */
+
+
+				/* Use the functions kindly provided by O'Reilly to start an AJAX request. */
+				var planClientWork = HTTP.newRequest();
+				planClientWork.open(httpcomm, requestURL, false);
+
+				/* POST */
+				if(httpcomm == "POST"){
+					planClientWork.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+					planClientWork.send("planworld_post=" + document.planrequest.planworld_post.value);
+				}
+				/* GET */
+				else{
+					planClientWork.send(null);
+				}
+
+				/* GET Completed Successfully. */
+				if(planClientWork.status == 200){
+					// Unpack is only for json. Change to XML stuff.
+					//var unpack = eval('(' + planClientWork.responseText + ')');
+					document.getElementById('resultRaw').innerHTML = planClientWork.responseText;
+					document.getElementById('resultDecoded').innerHTML = formatDecode(planClientWork.responseText, formatOutput);
+				}
+				/* POST Completed Successfully. */
+				else if(planClientWork.status == 201){
+					document.getElementById('resultRaw').innerHTML = "POST for " + nounName + " completed successfully.";
+					document.getElementById('resultDecoded').innerHTML = "POST for " + nounName + " completed successfully.";
+				}
+				/* Error Condition. */
+				else{
+					document.getElementById('resultRaw').innerHTML = "ERROR: " + planClientWork.status + "<br />" + planClientWork.responseText;
+					document.getElementById('resultDecoded').innerHTML = "ERROR: " + planClientWork.status + "<br />" + planClientWork.responseText;
+				}
+
+
+				/* Clean Up.
+				Clear the form back to defaults.
+				Keep token value and output format.
+				HTTP set to GET, Use Token to Yes
+				Everything else is blank. */
+				document.planrequest.arg1.value = "";
+				document.planrequest.arg2.value = "";
+				document.planrequest.arg3.value = "";
+				document.planrequest.arg4.value = "";
+				document.planrequest.planworld_post.value = "";
+				document.planrequest.useToken[0].checked = true;
+				document.planrequest.httpMethod[0].checked = true;
+
+				return false; /* Don't post the form. Ajax has done all the work. */
+			}
+		</script>
+
+		<h3>Planworld API Debug Client</h3>
+		<form name="planrequest" method="post" onsubmit="jsclient(this.form)"><table>
+		<tr><td colspan="3">Planworld Node URL<br><input type="text" size="74" name="nodeURL" value="http://servername.com/client/" /></td></tr>
+		<tr><td>API Version<br><select name="apiVersion" />
+			<option selected value="3.00">3.00</option>
+		</select></td></tr>
+		<tr><td>Category<br><select name="category" />
+			<option selected value="system">system</option>
+			<option value="send">send</option>
+		</select></td></tr>
+		<tr><td>Planworld Noun<br><select name="planNoun" />
+			<option value="version">version (get only)</option>
+			<option value="send">send (get and post)</option>
+			<option value="sendlist">sendlist (get only)</option>
+		</select></td></tr>
+		<tr><td>Argument 1<br><input type="text" name="arg1" /></td></tr>
+		<tr><td>Argument 2<br><input type="text" name="arg2" /></td></tr>
+		<tr><td>Argument 3<br><input type="text" name="arg3" /></td></tr>
+		<tr><td>Argument 4<br><input type="text" name="arg4" /></td></tr>
+		<tr><td>Token<br><input type="text" name="token" /></td></tr>
+		<tr><td>Use Token?</td>
+			<td><input type="radio" name="useToken" value="Yes" /> Yes
+			<input type="radio" name="useToken" value="No" checked /> No</td>
+		</tr>
+		<tr><td>HTTP Method</td>
+			<td><input type="radio" name="httpMethod" value="GET" checked /> GET
+			<input type="radio" name="httpMethod" value="POST" /> POST</td>
+		</tr>
+		<tr><td>Output Format</td>
+			<td><input type="radio" name="outputFormat" value="xml" checked /> XML
+			<input type="radio" name="outputFormat" value="json" /> JSON
+			<input type="radio" name="outputFormat" value="txt" /> TEXT</td>
+		</tr>
+		</table>
+		<p>Post:<br><textarea name="planworld_post" rows="10" cols="40"></textarea><br></p>
+		<div id="sendRequestButton"><a href="javascript:jsclient()">Send Plan Request Now</a></div>
+		</form>
+		<h3>Request Output Unformatted:</h3>
+		<div id="resultRaw">
+		<p>API Result will appear here in unformatted form.</p>
+		</div>
+		<h3>Request Output Decoded and Formatted:</h3>
+		<div id="resultDecoded">
+		<p>API Result will appear here outside of its format wrapper.</p>
+		</div>
+		<h3>Raw URL:</h3>
+		<div id="rawURL">
+		<p>RESTful URL sent to node will be shown here.</p>
+		</div>
+
+	</body>
+</html>
