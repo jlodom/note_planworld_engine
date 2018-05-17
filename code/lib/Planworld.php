@@ -453,7 +453,9 @@ public static function isUser ($uid, $force=false) {
 			if(!$dbh){
 				throw new PDOException('Database connection not initialized.');
 			}
-			$query = $dbh->prepare('SELECT username FROM users WHERE last_login!=0 AND remote="N" ORDER BY username');
+			/* 20180410 JLO2 - Until login code is implemented in the scaffolding system, a simpler version of this query should be used.
+			$query = $dbh->prepare('SELECT username FROM users WHERE last_login!=0 AND remote="N" ORDER BY username'); */
+			$query = $dbh->prepare('SELECT username FROM users WHERE remote="N" ORDER BY username');
 			$query->execute();
 			$result = $query->fetchAll();
 			if (!$result){

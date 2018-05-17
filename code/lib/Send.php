@@ -124,13 +124,14 @@ class Send {
 		if($planworldForGetSendList->isUser($uid)){
 			$dbh = Planworld::_connect();
 			try{
-				$query = $dbh->prepare('SELECT name, isinbound, MAX(SENDDATE) AS senddate, seen FROM
-					(SELECT U.Username AS name, "TRUE" AS isinbound, MAX(S.SENT) AS senddate, seen  FROM SEND S, USERS U
-						WHERE U.ID=S.UID  AND s.to_uid=:uid GROUP BY S.UID
+				$query = $dbh->prepare('SELECT name, isinbound, senddate, seen FROM
+					(SELECT U.username AS name, "TRUE" AS isinbound, MAX(S.SENT) AS senddate, MAX(S.SEEN) as seen FROM send S, users U
+						WHERE U.id=S.uid  AND S.to_uid=:uid GROUP BY S.uid
 					UNION
-					SELECT U.Username AS name,  "FALSE" AS isinbound, MAX(S.SENT) AS senddate, seen FROM SEND S, USERS U
-						WHERE U.ID=S.TO_UID AND s.uid=:uid GROUP BY S.TO_UID) SUB
-					GROUP BY NAME ORDER BY name');
+					SELECT U.username AS name,  "FALSE" AS isinbound, MAX(S.sent) AS senddate, MAX(S.SEEN) as seen FROM send S, users U
+						WHERE U.id=S.to_uid AND S.uid=:uid GROUP BY S.to_uid
+						ORDER BY name, senddate DESC) SUB
+					GROUP BY name ORDER BY name');
 				$queryArray = array('uid' => $uid);
 				$query->execute($queryArray);
 				$result = $query->fetchAll();

@@ -1,10 +1,12 @@
 **Readme For Planworld Alphas**
 --------------------------------------
+_Last Updated 20180409_ by jlodom00
 _Last Updated 20170406_ by jlodom00
-
 
 _Releases in V3.00 Alpha Series_
 20170406 - "Louisbourg" - Send Only Release Without Clients
+20180409 - "Loudon" - Fixed sendlist db query. Also make a note -- PHP 5.5 or later is required. Need to eliminate old JSON file and depedency.
+MAKE ANOTHER NOTE -- The NOTE Production Database contains invalid usernames. We filter for this in PW->getallusers, but in the future we should have a cleaner process to eliminate them. ALSO getallusers is part of scaffolding and the API userslocalGet call but it doesn't return all users now, just the local ones who are properly formatted.
 
 _License_
 This release does not yet include proper attribution for authors (Seth Fitzsimmons, Baker Franke, Johnnie Odom et al) but it is licensed using the GPLv2 as the previous version was. Future releases will more properly note this.

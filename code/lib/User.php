@@ -988,6 +988,72 @@ class User {
 	}
 
 
+	/* The following functions were moved here from the Online library. 20171121 JLO2 */
+
+	function isUserOnline(){
+					try{
+				if(!$this->dbh){
+					throw new PDOException('Database connection not initialized.');
+				}
+				$query = $this->dbh->prepare('SELECT count(last_access) as onlinecount FROM online where uid=:uid');
+				$queryArray = array('uid' => $this->userID);
+				$result = $query->execute($queryArray);
+								if (!$result){
+					return false;
+				}
+				else{
+					$intOnlineCount = (int) $result['onlinecount'];
+					if($intOnlineCount > 0){
+						return true;
+					}
+					else{
+						return false;
+					}
+				}
+				return false;
+			}
+			catch(PDOException $badquery){
+				return false;
+			}
+	}
+
+
+	/* Update the user's online status. If the user is not online, add them. If they are online, update them.
+		Set last login based on the user's current token. This last would need to change if we stop using tokens. */
+	function userOnline($stringWhatUserIsDoing = ''){
+			try{
+				if(!$this->dbh){
+					throw new PDOException('Database connection not initialized.');
+				}
+
+				if($this->isUserOnline()){
+
+				}
+				else{
+
+				}
+			}
+			catch(PDOException $badquery){
+				return false;
+			}
+	}
+
+
+	/* Sets the user to offline (i.e. removes them from the Online table. */
+	function userOffline(){
+			try{
+				if(!$this->dbh){
+					throw new PDOException('Database connection not initialized.');
+				}
+				$query = $this->dbh->prepare('DELETE FROM online WHERE uid=:uid');
+				$queryArray = array('uid' => $this->userID);
+				return $query->execute($queryArray);
+			}
+			catch(PDOException $badquery){
+				return false;
+			}
+	}
+
 
 	/* END CLASS */
 }

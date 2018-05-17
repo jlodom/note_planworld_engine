@@ -126,4 +126,18 @@ function PrintSimpleUserTable($printUserIdArray, $lookupTable, $title){
 }
 
 
+function PrintEvenSimplerUserTable($printUserIdArray, $title){
+	echo '<table>' . CR .  '<caption>' . $title . '</caption>' . CR;
+	echo '<tr><th>Row</th><th>Username</th></tr>' . CR;
+	$rowCount = 1;
+	foreach($printUserIdArray as $printUserId){
+		echo '<tr><td>' . $rowCount . '</td>';
+		echo '<td>' . $printUserId . '</td>';
+		echo '</tr>' . CR;
+		$rowCount++;
+	}
+	echo '</table>' . CR;
+}
+
+
 ?>
