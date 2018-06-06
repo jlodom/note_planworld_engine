@@ -23,6 +23,7 @@ function sendGet($arrayRestInputs){
 					for($i = 0; $i < $limit; $i++){
 						$sendReturn[$i]['sent'] = date(DATE_ATOM, $sendReturn[$i]['sent']);
 						$sendReturn[$i]['seen'] = date(DATE_ATOM, $sendReturn[$i]['seen']);
+						$sendReturn[$i]['requestinguser'] = $objectToken->username;
 					}
 				}
 				return $sendReturn;
@@ -77,8 +78,10 @@ function sendlistGet($arrayRestInputs){
 				if(is_array($sendlistReturn)){
 					$limit = count($sendlistReturn);
 					for($i = 0; $i < $limit; $i++){
-						$sendlistReturn[$i]['senddate'] = date(DATE_ATOM, $sendlistReturn[$i]['senddate']);
-						$sendlistReturn[$i]['seen'] = date(DATE_ATOM, $sendlistReturn[$i]['seen']);
+						$sendlistReturn[$i]['selfsenddate'] = date(DATE_ATOM, $sendlistReturn[$i]['selfsenddate']);
+						$sendlistReturn[$i]['selfseen'] = date(DATE_ATOM, $sendlistReturn[$i]['selfseen']);
+						$sendlistReturn[$i]['othersenddate'] = date(DATE_ATOM, $sendlistReturn[$i]['othersenddate']);
+						$sendlistReturn[$i]['otherseen'] = date(DATE_ATOM, $sendlistReturn[$i]['otherseen']);
 					}
 				}
 				return $sendlistReturn;
