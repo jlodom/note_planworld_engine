@@ -105,6 +105,32 @@ class Planworld {
 		return PLANWORLD_ERROR;
 	}
 
+
+   /* There is a debate on how one ought to iterate through strings in php ... https://stackoverflow.com/questions/4601032/php-iterate-on-string-characters */
+   public static function isValidWatchlistGroupName($stringName){
+     $boolReturn = true;
+     $stringNameArray = str_split($stringName);
+     foreach($stringNameArray as $char){
+       if((!(ctype_alnum($char))) && ($char != "_") && ($char != "-") && ($char != " ")){
+         $boolReturn = false;
+       }
+     }
+     return $boolReturn;
+   }
+
+
+   public static function isValidUserName($stringName){
+     $boolReturn = true;
+     $stringNameArray = str_split($stringName);
+     foreach($stringNameArray as $char){
+       if((!(ctype_alnum($char))) && ($char != "@")){
+         $boolReturn = false;
+       }
+     }
+     return $boolReturn;
+   }
+
+
 	/*
    int Planworld::nameToID ($uid)
    converts textual $uid to numeric representation
@@ -463,8 +489,11 @@ public static function isUser ($uid, $force=false) {
 			}
 			else {
 				$return = array();
+				/* Rudimentary data sanitization, but we need to validate the DB too as an administrative function. */
 				foreach($result as $row){
-					$return[] = $row['username'];
+					if(ctype_alnum(trim($row['username']))){
+						$return[] = trim($row['username']);
+					}
 				}
 				return $return;
 			}

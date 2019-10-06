@@ -7,9 +7,12 @@ _Releases in V3.00 Alpha Series_
 20170406 - "Louisbourg" - Send Only Release Without Clients
 20180409 - "Loudon" - Fixed sendlist db query. Also make a note -- PHP 5.5 or later is required. Need to eliminate old JSON file and depedency.
 MAKE ANOTHER NOTE -- The NOTE Production Database contains invalid usernames. We filter for this in PW->getallusers, but in the future we should have a cleaner process to eliminate them. ALSO getallusers is part of scaffolding and the API userslocalGet call but it doesn't return all users now, just the local ones who are properly formatted.
+20191005 - "Gordon" - Interim Release to get watchlist and basic plan-handling functionality as well as other improvements out to potential programmers before testing is finished. Necessitated by some discussion of how blocklists will be implemented. 
 
 _License_
 This release does not yet include proper attribution for authors (Seth Fitzsimmons, Baker Franke, Johnnie Odom et al) but it is licensed using the GPLv2 as the previous version was. Future releases will more properly note this.
+As of October 2019 this software uses HTML Purifier (  )
+
 
 _Introduction_
 Use these instructions to set up an independent test instance of the in-progress Planworld v3 code for testing and client development. It contains only a tiny portion of the full Planworld functionality, and the code is not as well-documented or cleaned up as it will be by release. The instructions are clear to me (jlodom00), but I deal with this sort of thing all the time so feel free to reach out ( jlodom00@alumni.amherst.edu ) if you need help.
@@ -63,7 +66,7 @@ VERSION: 0.00/
 	
 CATEGORY: category/
 
-	This portion of the path is meant to make grouping planworld calls/functions/verbs easier, especially for those implementing the engine. If you have trouble making an API call, (especially using the debug client), check to make sure that this value is correct for the verb that is being called. Current values are "system" and "send".
+	This portion of the path is meant to make grouping planworld calls/functions/verbs easier, especially for those implementing the engine. If you have trouble making an API call, (especially using the debug client), check to make sure that this value is correct for the verb that is being called. Current values are "system", "send", "watchlist", and "plan".
 	
 VERB: verb/
 	This is the actual verb or planworld function being called. These have different properties depending upon whether information is being retrieved (GET) or sent (POST) and the same verb may perform both roles. Current values are "version" (pairing with the "system" category), "send", and "sendlist" (both pairing with the "send" category). Of the four verbs listed, all support GET but only "send" supports POST.
@@ -90,7 +93,19 @@ Category - Send (Tokens required for all)
 	send : GET Returns the full send conversation between the user and another user. Takes one argument -- the username of the other user in the conversation.
 	send : POST Send a new message to another user. Takes one argument -- the username of the other user in the conversation.	
 	sendlist : GET Returns a list of every user with whom the current user has had a send conversation (similar to a watchlist). No arguments.
+
+Category - Plan (Tokens required for all)
+	plan : GET Returns a user's plan. Takes one argument -- the username of the plan to be read.
+		: POST Returns a boolean indicating success or failure. Deletes a user's current plan and replaces it with the data in the POST. The plan data should be in HTML format (this could encompass plain text).
 	
+Category - Watchlist (Tokens required for all)
+[NOTE: These calls are not well-documented and the POST versions have not been tested.]
+	watchlist : GET Returns a user's full watchlist.
+	watchlistgroup : GET Returns the same data as watchlist but in groups
+	groupcreate : POST Creates a watchlist group. The post data should be empty. Takes one URL argument -- the name of the group to be created.
+	groupmoveuser : POST Moves a user to a specified watchlist group. The post data should be empty. Takes two URL arguments -- the name of the user and the name of the group.
+	add: POST POST Adds a user to a watchlist group. The post data should be empty. Takes one URL argument -- the username to be added.
+
 *Writing a Client*
 
 For this alpha release, you will need to create a user and a token for that user before client calls can be made because there is no way to create tokens through the client API. Clients may be written on any platform and in any programming language -- as long as they can make GET and POST HTTP calls to the API URLs. The API is a REST API and generally conforms to the conventions established by that style.
