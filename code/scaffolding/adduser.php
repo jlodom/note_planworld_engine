@@ -23,7 +23,7 @@
 			$newby->create();
 			$userExists = new User($username);
 			$userId = $userExists->userID;
-			$pass = crypt($username, ((int)$userId + 45678));
+			$pass = str_replace('.', '',(str_replace('/', '', crypt($stringLoginUser, ((int)$intLoginUser + 45678)))));
 			$message = 'User ' . $username . ' created with password ' . $pass;
 		}
 	}

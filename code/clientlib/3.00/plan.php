@@ -16,7 +16,12 @@ function planGet($arrayRestInputs){
       $userPlanToGet = $arguments[0];
       if(Planworld::isUser($userPlanToGet)){
         $userPlanToGetObject = new User($userPlanToGet);
-        return $userPlanToGetObject->getPlanSimple($thisUserObject);
+        if(!$thisUserObject->doesBlockRelationshipExist($userPlanToGetObject->getUserID())){
+          return $userPlanToGetObject->getPlanSimple($thisUserObject);
+        }
+        else{
+          return 'Either you or this user is blocked by the other.';
+        }
       }
       else{
         return '';

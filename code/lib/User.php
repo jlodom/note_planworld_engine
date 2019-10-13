@@ -74,7 +74,7 @@ class User {
     $this->dbh = Planworld::_connect();
     $this->type = 'local';
     if (is_string($uid)) {
-      $this->username = $uid;
+      $this->username = strtolower($uid);
     }
     else if (is_int($uid)) {
         $this->userID = (int)$uid;
@@ -1055,6 +1055,148 @@ class User {
   }
 
 
+  function isUserIdInBlocklist ($buid) {
+    $boolReturn = true;
+    $boolReturn = true;
+    if(is_string($buid)){
+      $buid = Planworld::nameToID($buid);
+    }
+    if((is_int($buid)) && ($buid != PLANWORLD_ERROR)){
+      try{
+        if(!$this->dbh){
+          throw new PDOException('Database connection not initialized.');
+        }
+        $query = $this->dbh->prepare('SELECT b_uid FROM block WHERE uid= :uid AND b_uid= :buid');
+        $queryArray = array('uid' => $this->userID, 'buid' => $buid);
+        $query->execute($queryArray);
+        $result = $query->fetchAll();
+        if (!$result){
+          $boolReturn = false;
+          return $boolReturn;
+        }
+        else{
+          $boolReturn = true;
+          return $boolReturn;
+        }
+      }
+      catch(PDOException $badquery){
+        $boolReturn = true;
+        return $boolReturn;
+      }
+    }
+    return $boolReturn;
+  }
+
+
+  function doesBlockRelationshipExist($buid){
+    $boolReturn = true;
+    if(is_string($buid)){
+      $buid = Planworld::nameToID($buid);
+    }
+    if((is_int($buid)) && ($buid != PLANWORLD_ERROR)){
+      try{
+        if(!$this->dbh){
+          throw new PDOException('Database connection not initialized.');
+        }
+        $query = $this->dbh->prepare('SELECT b_uid FROM block WHERE (uid= :uid AND b_uid= :buid) OR (b_uid= :uid AND uid= :buid)');
+        $queryArray = array('uid' => $this->userID, 'buid' => $buid);
+        $query->execute($queryArray);
+        $result = $query->fetchAll();
+        if (!$result){
+          $boolReturn = false;
+          return $boolReturn;
+        }
+        else{
+          $boolReturn = true;
+          return $boolReturn;
+        }
+      }
+      catch(PDOException $badquery){
+        $boolReturn = true;
+        return $boolReturn;
+      }
+    }
+    return $boolReturn;
+  }
+
+  function getBlockListNames(){
+    $arrayReturn = array();
+    try{
+      if(!$this->dbh){
+        throw new PDOException('Database connection not initialized.');
+      }
+      $query = $this->dbh->prepare('SELECT username FROM users LEFT JOIN block bl ON bl.b_uid=users.id WHERE uid= :uid ORDER BY username');
+      $queryArray = array('uid' => $this->userID);
+      $query->execute($queryArray);
+      $result = $query->fetchAll();
+      foreach ($result as $row){
+        $arrayReturn[] = $row['username'];
+      }
+    }
+    catch(PDOException $badquery){
+      $boolReturn = true;
+      return $arrayReturn;
+    }
+    return $arrayReturn;
+  }
+
+  function getBlockedByNames(){
+    $arrayReturn = array();
+    try{
+      if(!$this->dbh){
+        throw new PDOException('Database connection not initialized.');
+      }
+      $query = $this->dbh->prepare('SELECT username FROM users LEFT JOIN block bl ON bl.uid=users.id WHERE bl.b_uid= :uid ORDER BY username');
+      $queryArray = array('uid' => $this->userID);
+      $query->execute($queryArray);
+      $result = $query->fetchAll();
+      foreach ($result as $row){
+        $arrayReturn[] = $row['username'];
+      }
+    }
+    catch(PDOException $badquery){
+      $boolReturn = true;
+      return $arrayReturn;
+    }
+    return $arrayReturn;
+  }
+
+
+  function addUserToBocklist($uid){
+    $intUid = $this->user->getUserID();
+    $intBUid = -1;
+    if(is_int($uid)){
+      $intBUid = $uid;
+    }
+    else{
+      $intBUid = Planworld::nameToID($uid);
+    }
+    try{
+      $query = $this->dbh->prepare('INSERT INTO block (b_uid, uid, added) VALUES (:buid, :uid, :added)');
+      $queryArray = array('buid' => $intBUid, 'uid' => $intUid, 'added' => time());
+      $query->execute($queryArray);
+      return true;
+    }
+    catch(PDOException $badquery){
+      return false;
+    }
+  }
+
+
+  /* TODO: Flesh out functions for overriding lock and for getting lock times. */
+  function removeUserFromBlocklistIfUnlocked ($uid) {
+    $intUid = $this->user->getUserID();
+    $intBUid = -1;
+    if(is_int($uid)){
+      $intBUid = $uid;
+    }
+    else{
+      $intBUid = Planworld::nameToID($uid);
+    }
+    $query = $this->dbh->prepare('DELETE FROM block WHERE b_uid=:buid AND uid=:uid AND added < :lockthreshold');
+    $queryArray = array('buid' => $intBUid, 'uid' => $intUid, 'lockthreshold' => (time() - LOCKTIME));
+    $query->execute($queryArray);
+  }
 
 
   /**
@@ -1094,13 +1236,13 @@ class User {
   }
 
 
-   /**
+  /**
    * JLO2 20191005 - A simplified form of setPlan that does not support the Archive pieces, drafts, or journaling.
    * Implemented so that we would have enough functionality to start building v3 around.
    */
   function setPlanSimple ($plan) {
     $boolSuccess = true;
-      $timestamp = mktime();
+    $timestamp = mktime();
     $oldplan = $this->getPlanSimple($this);
 
     try{
@@ -1112,7 +1254,7 @@ class User {
       $boolSuccess = $query1->execute($queryArray1);
     }
     catch(PDOException $badquery1){
-      return 'BLUEBERRY';
+      return 'LAMPLIGHT';
     }
 
     /* process snoop references */
@@ -1127,7 +1269,7 @@ class User {
       $queryArray2 = array('uid' => $this->userID, 'plan' =>$plan);
       $boolSuccess = $boolSuccess && $query2->execute($queryArray2);
     }
-    catch(PDOException $badquery1){
+    catch(PDOException $badquery2){
       return false;
     }
     return $boolSuccess;

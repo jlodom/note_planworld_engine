@@ -64,7 +64,7 @@ class Planworld {
 				throw new PDOException('Database connection not initialized.');
 			}
 			$query = $dbh->prepare('INSERT INTO users (id, username, remote, first_login) VALUES (:id, :username, :remote, :first_login)');
-			$queryArray = array('id' => $intId, 'username' => addslashes($uid), 'remote' => $remote, 'first_login'=> time());
+			$queryArray = array('id' => $intId, 'username' => strtolower(addslashes($uid)), 'remote' => $remote, 'first_login'=> time());
 			$result = $query->execute($queryArray);
 			if(count($result) < 1){
 				return PLANWORLD_ERROR;
@@ -139,6 +139,7 @@ class Planworld {
 	function nameToID ($uid) {
 		static $table; /* persistent lookup table */
 		if (is_string($uid)) {
+  		$uid = strtolower($uid);
 			if (isset($table[$uid])) {
 				return $table[$uid];
 			}
@@ -240,7 +241,7 @@ public static function isUser ($uid, $force=false) {
 				$query = $dbh->prepare('SELECT COUNT(id) AS count FROM users WHERE id= :uid');
 			}
 			else if (is_string($uid)) {
-					$uid = addslashes($uid);
+					$uid = strtolower(addslashes($uid));
 					$query = $dbh->prepare('SELECT COUNT(id) AS count FROM users WHERE username= :uid');
 				}
 			$queryArray = array('uid' => $uid);
@@ -282,7 +283,7 @@ public static function isUser ($uid, $force=false) {
 				$query = $dbh->prepare('SELECT remote FROM users WHERE id= :uid');
 			}
 			else if (is_string($uid)) {
-					$uid = addslashes($uid);
+					$uid = strtolower(addslashes($uid));
 					$query = $dbh->prepare('SELECT remote FROM users WHERE username= :uid');
 				}
 			$queryArray = array('uid' => $uid);

@@ -136,7 +136,6 @@ class Planwatch {
    */
   function save(){
     if ($this->changed) {
-      $this->dbh = Planworld::_connect();
       foreach ($this->planwatch as $u=>$entry) {
         if (isset($entry[3]) && $entry[3]) {
           try{
@@ -300,7 +299,7 @@ class Planwatch {
   function addGroup ($name) {
     try{
       $intUid = $this->user->getUserID();
-      $id = (int) $this->dbh->nextId('groupid');
+      $id = (int) $this->dbh->nextId('groupid'); // GUESS WHAT THIS DOESN'T WORK OUTSIDE OF PEAR OOPS. FIX
       $query = $this->dbh->prepare('INSERT INTO pw_groups (gid, uid, name) VALUES (:id, :uid, :name)');
       $queryArray = array('id' => $id, 'uid' => $intUid, 'name' => $name);
       $query->execute($queryArray);
@@ -367,22 +366,30 @@ class Planwatch {
     else{
       $intWUid = Planworld::nameToID($uid);
     }
-    $query = $this->dbh->prepare('INSERT INTO planwatch (w_uid, uid) VALUES (:wuid, :uid)');
-    $queryArray = array('wuid' => $intWUid, 'uid' => $intUid);
-    $query->execute($queryArray);
+    try{
+      $query = $this->dbh->prepare('INSERT INTO planwatch (w_uid, uid) VALUES (:wuid, :uid)');
+      $queryArray = array('wuid' => $intWUid, 'uid' => $intUid);
+      $query->execute($queryArray);
+      return true;
+    }
+    catch(PDOException $badquery){
+      return false;
+    }
   }
 
   /* JLO2 20191005 - This can't possibly be as simple as I think it is. */
   function getInteroperableWatchlist(){
     $arrayInteroperableList = array();
     foreach ($this->planwatch as $username => $watchrow){
-      $watchlineArray = array(
-        'username' => $username,
-        'lastupdate' => date(DATE_ATOM, $watchrow[1]),
-        'lastview' => date(DATE_ATOM, $watchrow[2]),
-        'hasmessage' => $watchrow[3]
-      );
-      $arrayInteroperableList[] = $watchlineArray;
+      if(!($this->user->doesBlockRelationshipExist($username))){
+        $watchlineArray = array(
+          'username' => $username,
+          'lastupdate' => date(DATE_ATOM, $watchrow[1]),
+          'lastview' => date(DATE_ATOM, $watchrow[2]),
+          'hasmessage' => $watchrow[3]
+        );
+        $arrayInteroperableList[] = $watchlineArray;
+      }
     }
     return $arrayInteroperableList;
   }
@@ -391,8 +398,11 @@ class Planwatch {
   /* Separate call to get group information. */
   function getInteroperableWatchlistGroups(){
     $arrayGroupLevelList = array();
+    $intCounter = 0;
     foreach ($this->groupData as $groupname => $grouparray){
-      $arrayGroupLevelList[$groupname] = array();
+      $arrayGroupLevelList[$intCounter] = array();
+      $arrayGroupLevelList[$intCounter]['groupname'] = $groupname;
+      $arrayGroupLevelList[$intCounter]['membership'] = array();
       foreach ($grouparray as $username => $watchrow){
         $watchlineArray = array(
           'username' => $username,
@@ -400,8 +410,9 @@ class Planwatch {
           'lastview' => date(DATE_ATOM, $watchrow[2]),
           'hasmessage' => $watchrow[3]
         );
-        $arrayGroupLevelList[$groupname][] = $watchlineArray;
+        $arrayGroupLevelList[$intCounter]['membership'][] = $watchlineArray;
       }
+      $intCounter++;
     }
     return $arrayGroupLevelList;
   }

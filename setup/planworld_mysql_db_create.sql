@@ -24,6 +24,13 @@ CREATE TABLE IF NOT EXISTS archive (
   PRIMARY KEY (uid,posted)
 );
 
+CREATE TABLE IF NOT EXISTS block (
+  uid bigint NOT NULL DEFAULT 0,
+  b_uid bigint NOT NULL DEFAULT 0,
+  added int NOT NULL DEFAULT 0,
+  PRIMARY KEY (uid,b_uid)
+);
+
 CREATE TABLE IF NOT EXISTS cookies (
   id int NOT NULL DEFAULT 0,
   quote text NOT NULL,
@@ -95,7 +102,7 @@ CREATE TABLE IF NOT EXISTS online (
 );
 
 CREATE TABLE IF NOT EXISTS plans (
-  id int  UNIQUE NOT NULL,
+  id int  UNIQUE NOT NULL AUTO_INCREMENT,
   uid bigint NOT NULL DEFAULT 0,
   content text NOT NULL,
   PRIMARY KEY (uid)

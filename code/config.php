@@ -24,6 +24,7 @@ define("TOKEN_LIFE",	2592000); /* Default is six hours - 6 hours * 60 minutes * 
 define("NODE_TOKEN_PREFIX",	999000000);
 define("TRUSTEDAPPKEY", "BogusKey");
 define("TESTLEVEL", "LOCALTEST"); /* Options are PRODUCTION, TEST, and LOCALTEST */
+define("LOCKTIME", 86400); /* Time for values like blocklists and sensitive preferences to be locked before next change. */
 
 /* Cross-library definitions */
 define('PLANWORLD_OK', 0); /* PLANWORLD_OK Operation succeeded. */

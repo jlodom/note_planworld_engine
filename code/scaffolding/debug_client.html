@@ -84,26 +84,26 @@
 					argument1 = '';
 				}
 				else{
-					argument1 = '/' + document.planrequest.arg1.value;
+					argument1 = '/' + document.planrequest.arg1.value.replace('/','');
 				}
 				if((document.planrequest.arg2.value==null) || document.planrequest.arg2.value==''){
 					argument2 = '';
 				}
 				else{
-					argument2 = '/' + document.planrequest.arg2.value;
+					argument2 = '/' + document.planrequest.arg2.value.replace('/','');
 				}
 				if((document.planrequest.arg3.value==null) || document.planrequest.arg3.value==''){
 					argument3 = '';
 				}
 				else{
-					argument3 = '/' + document.planrequest.arg3.value;
+					argument3 = '/' + document.planrequest.arg3.value.replace('/','');
 				}
 
 				if((document.planrequest.arg4.value==null) || document.planrequest.arg4.value==''){
 					argument4 = '';
 				}
 				else{
-					argument4 = '/' + document.planrequest.arg4.value;
+					argument4 = '/' + document.planrequest.arg4.value.replace('/','');
 				}
 
 				for (var i=0; i < document.planrequest.outputFormat.length; i++){
@@ -181,21 +181,25 @@
 		</select></td></tr>
 		<tr><td>Category<br><select name="category" />
 			<option selected value="system">system</option>
+		  <option value="plan">plan</option>
 			<option value="send">send</option>
-			<option value="watchlist">watchlist</option>
-			<option value="plan">plan</option>
+			<option value="watch">watch</option>
+			<option value="block">block</option>
+			<option value="debug">debug</option>
 		</select></td></tr>
 		<tr><td>Planworld Noun<br><select name="planNoun" />
-			<option value="version">version (get only)</option>
-			<option value="userslocal">userslocal (get only)</option>
-			<option value="plan">plan (get and post)</option>
-			<option value="send">send (get and post)</option>
-			<option value="sendlist">sendlist (get only)</option>
-			<option value="watchlist">watchlist (get only)</option>
-			<option value="watchlistgroup">watchlistgroups (get only)</option>
-			<option value="groupcreate">groupcreate (post only)</option>
-			<option value="groupmoveuser">groupmoveuser (post only)</option>
-			<option value="add">add (post only)</option>
+			<option value="version">version (get only, system)</option>
+			<option value="userslocal">userslocal (get only, system)</option>
+			<option value="plan">plan (get and post, plan)</option>
+			<option value="send">send (get and post, send)</option>
+			<option value="sendlist">sendlist (get only, send)</option>
+			<option value="watchlist">watchlist (get only, watch)</option>
+			<option value="watchlistgroup">watchlistgroup (get only, watch)</option>
+			<option value="moveusergroup">moveusergroup (post only, watch)</option>
+			<option value="addgroup">addgroup (post only, watch)</option>
+			<option value="add">add (post only, watch and block)</option>
+			<option value="remove">remove (post only, watch and block)</option>
+			<option value="pseudologin">pseudologin (get only, debug)</option>
 
 		</select></td></tr>
 		<tr><td>Argument 1<br><input type="text" name="arg1" /></td></tr>
