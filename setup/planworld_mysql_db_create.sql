@@ -210,7 +210,7 @@ insert into news_seq (id) values (0);
 insert into cookies_seq (id) values (0);
 
 
-
+insert into pw_groups (gid, uid, name, pos) values (1, 0, 'People', 0);
 
 insert into timezones (name) values ('Europe/Andorra');
 insert into timezones (name) values ('Asia/Dubai');
