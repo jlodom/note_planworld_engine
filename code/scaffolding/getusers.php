@@ -19,7 +19,7 @@ if((isset($_POST['loginusername'])) && (isset($_POST['loginpassword']))){
 	else{
 		$userExists = new User($username);
 		$userId = $userExists->userID;
-		$comparepass = crypt($username, ((int)$userId + 45678));
+		$comparepass = str_replace('.', '',(str_replace('/', '', crypt($username, ((int)$userId + 45678)))));
 		if(strcmp($password, $comparepass) == 0){
 			$pw = new Planworld();
 			$arrayUsers = $pw->getAllUsers();

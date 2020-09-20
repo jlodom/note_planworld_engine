@@ -15,7 +15,7 @@
 		if(!ctype_alnum($username)){
 			$message = "Usernames for this test site must be alphanumeric";
 		}
-		else if(Planworld::isUser($username)){
+		else if(intval(Planworld::isUser($username)) > 0){
 			$message = 'User ' . $username . ' already exists.';
 		}
 		else{
@@ -23,7 +23,7 @@
 			$newby->create();
 			$userExists = new User($username);
 			$userId = $userExists->userID;
-			$pass = str_replace('.', '',(str_replace('/', '', crypt($stringLoginUser, ((int)$intLoginUser + 45678)))));
+			$pass = str_replace('.', '',(str_replace('/', '', crypt($username, ((int)$userId + 45678)))));
 			$message = 'User ' . $username . ' created with password ' . $pass;
 		}
 	}
