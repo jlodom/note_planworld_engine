@@ -56,12 +56,12 @@ class User {
       $temp = new User($uid);
       return $temp;
     }
-    else if (!Planworld::isUser($uid) && !strstr($uid, '@')) {
+    else if (intval(Planworld::isUser($uid)) < 1 && strstr($uid, '@') == false) {
         $temp = new User($uid);
         return $temp;
       }
     else {
-      list(,$host) = split('@', $uid);
+      list(,$host) = explode('@', $uid);
       $nodeinfo = Planworld::getNodeInfo($host);
       $temp = new RemoteUser($uid, $nodeinfo);
       return $temp;
@@ -380,9 +380,8 @@ class User {
    */
   function loadPlanwatch () {
     if (!isset($this->planwatch)) {
-      // FIX AND ADD WHEN PLANWATCH IMPLEMENTED
-      //$this->planwatch = new Planwatch($this);
-      return false;
+      $this->planwatch = new Planwatch($this);
+      return true;
     }
     else{
       return PLANWORLD_ERROR;
@@ -1239,6 +1238,7 @@ class User {
   /**
    * JLO2 20191005 - A simplified form of setPlan that does not support the Archive pieces, drafts, or journaling.
    * Implemented so that we would have enough functionality to start building v3 around.
+   JLO2 20200915 - Just realized that nowhere do we actually set the last update time. So we do that here now.
    */
   function setPlanSimple ($plan) {
     $boolSuccess = true;
@@ -1254,7 +1254,7 @@ class User {
       $boolSuccess = $query1->execute($queryArray1);
     }
     catch(PDOException $badquery1){
-      return 'LAMPLIGHT';
+      return false;
     }
 
     /* process snoop references */
@@ -1268,6 +1268,11 @@ class User {
       $query2 = $this->dbh->prepare('INSERT INTO plans (uid, content) VALUES (:uid, :plan)');
       $queryArray2 = array('uid' => $this->userID, 'plan' =>$plan);
       $boolSuccess = $boolSuccess && $query2->execute($queryArray2);
+      if($boolSuccess){
+            $query3 = $this->dbh->prepare('UPDATE users SET last_update=:lastupdate WHERE id = :uid');
+      $queryArray3 = array('uid' => $this->userID, 'lastupdate' => $timestamp);
+      $boolSuccess = $boolSuccess && $query3->execute($queryArray3); 
+      }
     }
     catch(PDOException $badquery2){
       return false;

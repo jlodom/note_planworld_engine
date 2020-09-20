@@ -93,8 +93,13 @@ class NodeToken {
 				$this->uid = (int)$result['uid'];
 				$this->clientname = (string)$result['clientname'];
 				$this->expire = (int)$result['expire'];
-				if(time() < $this->expire){
+				$currentTime = time();
+				if($currentTime < $this->expire){
 					$this->valid = true;
+					/* Take a moment to update the user last_login time for the API. */
+					$query2 = $this->dbh->prepare('UPDATE users SET last_login=:lastlogin WHERE id = :uid');
+      $queryArray2 = array('uid' => $this->uid, 'lastlogin' => $currentTime);
+      				$query2->execute($queryArray2); 
 				}
 				/* Token exists but is expired. Get rid of it. */
 				else{

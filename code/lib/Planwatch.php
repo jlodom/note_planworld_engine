@@ -36,6 +36,13 @@ class Planwatch {
   /* Loads planwatch data into this object.
    * Previous versions used a sort variable as an argument. This has now been removed because it is up to the client to sort. */
   function load() {
+    /* Initialize variables at the top so that even if calls fail the variables
+    remain initialized for things that call foreach later. 
+    This is done to fail safe.*/
+        $this->planwatch = array();
+        $this->groupData = array();
+        $this->groupData['Send'] = array();
+        $this->groups = array();
     /* One major change from the original code is that we do all the DB calls at once to clear any locks and reduce overall latency. */
     try{
       $currentUid = $this->user->getUserID();
@@ -54,10 +61,6 @@ class Planwatch {
         return PLANWORLD_ERROR;
       }
       else {
-        $this->planwatch = array();
-        $this->groupData = array();
-        $this->groupData['Send'] = array();
-        $this->groups = array();
         foreach($result1 as $row) {
           $watchuser = addslashes($row['username']);
           $group = $row['name'];
@@ -403,14 +406,17 @@ class Planwatch {
       $arrayGroupLevelList[$intCounter] = array();
       $arrayGroupLevelList[$intCounter]['groupname'] = $groupname;
       $arrayGroupLevelList[$intCounter]['membership'] = array();
-      foreach ($grouparray as $username => $watchrow){
-        $watchlineArray = array(
-          'username' => $username,
-          'lastupdate' => date(DATE_ATOM, $watchrow[1]),
-          'lastview' => date(DATE_ATOM, $watchrow[2]),
-          'hasmessage' => $watchrow[3]
-        );
-        $arrayGroupLevelList[$intCounter]['membership'][] = $watchlineArray;
+      if(!($this->user->doesBlockRelationshipExist($username))){
+
+        foreach ($grouparray as $username => $watchrow){
+          $watchlineArray = array(
+            'username' => $username,
+            'lastupdate' => date(DATE_ATOM, $watchrow[1]),
+            'lastview' => date(DATE_ATOM, $watchrow[2]),
+            'hasmessage' => $watchrow[3]
+          );
+          $arrayGroupLevelList[$intCounter]['membership'][] = $watchlineArray;
+        }
       }
       $intCounter++;
     }

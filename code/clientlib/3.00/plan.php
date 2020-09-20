@@ -8,6 +8,7 @@ function planGet($arrayRestInputs){
   if((file_exists($arrayRestInputs['enginebasedir'] . '/lib/User.php')) && (file_exists($arrayRestInputs['enginebasedir'] . '/lib/NodeToken.php')) ){
     require_once($arrayRestInputs['enginebasedir'] . '/lib/User.php');
     require_once($arrayRestInputs['enginebasedir'] . '/lib/NodeToken.php');
+    require_once($arrayRestInputs['enginebasedir'] . '/lib/Planwatch.php');
     $objectToken = new NodeToken ();
     if(($objectToken->retrieveToken($arrayRestInputs['token'])) && (count($arrayRestInputs['arguments']) > 0)){
       $thisUserUid = $objectToken->uid;
@@ -17,6 +18,10 @@ function planGet($arrayRestInputs){
       if(Planworld::isUser($userPlanToGet)){
         $userPlanToGetObject = new User($userPlanToGet);
         if(!$thisUserObject->doesBlockRelationshipExist($userPlanToGetObject->getUserID())){
+         /* Make sure the user's Planwatch gets updated. This may be a costly call. */
+          $thisUserObject->loadPlanwatch();
+		  $thisUserObject->planwatch->markSeen($userPlanToGetObject);
+          $thisUserObject->save();
           return $userPlanToGetObject->getPlanSimple($thisUserObject);
         }
         else{
