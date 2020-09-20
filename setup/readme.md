@@ -4,6 +4,8 @@ _Last Updated 220191012_ by jlodom00
 
 _Releases in V3.00 Alpha Series_
 
+    20200920 - "Ginsburg" - Changes to support more recent PHP versions and bugfixes for issues discovered early in the full Javascript client.
+
     20191012 - "Sevenoaks" - Proper release of the features targeted in "Gordon" with many additions and bugfixes including always lowercasing usernames in important library calls. Most importantly, blocklists have been implemented. Enough of the API is now built that developers can create a proper client targeting it. We expect that the API will change as developers work with it. Only pseudo-authentication is supported via the "debug" API calls.
 
     20191005 - "Gordon" - Interim Release to get watchlist and basic plan-handling functionality as well as other improvements out to potential programmers before testing is finished. Necessitated by some discussion of how blocklists will be implemented. 
